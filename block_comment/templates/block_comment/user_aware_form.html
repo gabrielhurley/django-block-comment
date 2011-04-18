@@ -1,0 +1,18 @@
+{% for field in form.hidden_fields %}
+    {{ field }}
+{% endfor %}
+{% for field in form.visible_fields %}
+<div class="clearfix{% if field.errors %} error{% endif %}"
+{% if field.name = "honeypot" %} style="display:none;"{% endif %}>
+    {% if field.name = "name" %}
+        {{ form.name.label_tag }}<input type="text" id="id_{{ form.name.html_name }}" name="{{ form.name.html_name }}" value="{% if form.data.name and not form.data.name.isspace %}{{ form.data.name }}{% else %}{{ user.first_name }} {{ user.last_name }}{% endif %}"{% if user.is_authenticated %} disabled="disabled"{% endif %}/>
+    {% else %}
+        {% if field.name = "email" %}
+            {{ form.email.label_tag }}<input type="text" id="id_{{ form.email.html_name }}" name="{{ form.email.html_name }}" value="{% if form.data.email and not form.data.email.isspace %}{{ form.data.email }}{% else %}{{ user.email }}{% endif %}"{% if user.is_authenticated %} disabled="disabled"{% endif %}/>
+        {% else %}
+            {{ field.label_tag }}{{ field }}
+        {% endif %}
+    {% endif %}
+    {% if field.errors %}{{ field.errors }}{% endif %}
+</div>
+{% endfor %}

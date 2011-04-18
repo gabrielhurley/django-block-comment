@@ -1,0 +1,5 @@
+*.pyc
+*.db
+test_project/static/*
+test_project/media/*
+docs/_*

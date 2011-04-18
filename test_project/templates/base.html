@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <title>{% block title %}Django Block Comments Demo{% endblock %}</title>
+        {% block stylesheets %}
+        <link rel="stylesheet" type="text/css" media="screen, projection" href="{{ STATIC_URL }}/css/stylesheet.css" />
+        {% endblock %}
+    </head>
+    <body>
+        <div class="topbar">
+            {% if request.user.is_authenticated %}
+            <p>Logged in as <span class="username">{{ request.user }}</span></p>
+            {% endif %}
+        </div>
+        <div id="container">
+            {% block content %}{% endblock %}
+        </div>
+        {% block scripts %}{% endblock %}
+    </body>
+</html>

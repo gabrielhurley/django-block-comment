@@ -1,0 +1,27 @@
+body {
+    overflow-y: scroll;
+}
+#container {
+    width: 600px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+p {
+    max-width: 600px;
+    margin: 0 0 1.5em;
+}
+
+p:last-child {margin-bottom: 0px;}
+
+label {
+    display: block;
+}
+textarea {
+    width: 570px;
+    height: 100px;
+}
+
+.error {
+    color: red;
+}
