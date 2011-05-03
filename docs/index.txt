@@ -30,7 +30,7 @@ Important notes:
   #. Add ``block_comment`` to your ``INSTALLED_APPS``.
   #. Add ``COMMENTS_APP = "block_comment"`` to your ``settings.py`` file.
   #. Run ``manage.py syncdb`` (or ``manage.py migrate`` if you use South).
-  #. Create a model that uses ``block_comments.models.BlockCommentField``.
+  #. Create a model that uses ``block_comments.fields.BlockCommentField``.
   #. Include ``block_comment.css`` and ``block_comment.js`` in your template.
   #. In your template add ``{% load comments %}``, and use the provided
      ``{% comment_form_target %}`` template tag to specify your comment
