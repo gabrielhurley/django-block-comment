@@ -17,7 +17,7 @@ class BlockCommentForm(CommentForm):
         text = self.cleaned_data.get("regarding", '')
         if text:
             target = self.target_object
-            field_name = getattr(target '_block_comment_field_name', '')
+            field_name = getattr(target, '_block_comment_field_name', '')
             orig_text = getattr(target, field_name, '')
             if text not in orig_text:
                 raise forms.ValidationError("Regarding text not found in original text.")
