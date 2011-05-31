@@ -29,7 +29,8 @@ Important notes:
 
   #. Add ``block_comment`` to your ``INSTALLED_APPS``.
   #. Add ``COMMENTS_APP = "block_comment"`` to your ``settings.py`` file.
-  #. Include ``'block_comment.urls'`` somewhere in your URLconf.
+  #. Include ``'block_comment.urls'`` somewhere in your URLconf. This will
+     also include all the standard URLs from ``django.contrib.comments.urls``.
   #. Run ``manage.py syncdb`` (or ``manage.py migrate`` if you use South).
   #. Create a model that uses ``block_comments.fields.BlockCommentField``.
   #. Include ``block_comment.css`` and ``block_comment.js`` in your template.
