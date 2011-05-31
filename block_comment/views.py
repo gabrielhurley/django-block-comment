@@ -9,8 +9,8 @@ from django.utils.html import escape
 from django.utils import simplejson as json
 from django.views.decorators.http import require_POST
 
-from block_comment.forms import BlockCommentForm
-from block_comment.models import BlockComment
+from .forms import BlockCommentForm
+from .models import BlockComment
 
 @require_POST
 def post_block_comment(request, using=None):
@@ -55,6 +55,8 @@ def post_block_comment(request, using=None):
     form = BlockCommentForm(target, data=data)
     if form.is_valid():
         comment = form.get_comment_object()
+        if request.user.is_authenticated():
+            comment.user = request.user
         comment.save()
         d = {"comment": comment}
         if request.is_ajax():
