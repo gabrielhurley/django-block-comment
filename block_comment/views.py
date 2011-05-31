@@ -23,10 +23,6 @@ def post_block_comment(request, using=None):
         if not data.get('email', ''):
             data["email"] = request.user.email
 
-    next = data.get('next')
-    if not next and hasattr(target, "get_absolute_url"):
-        next = target.get_absolute_url()
-
     # ContentType validation
     ctype = data.get("content_type")
     object_pk = data.get("object_pk")
@@ -50,6 +46,10 @@ def post_block_comment(request, using=None):
         return CommentPostBadRequest(
             "Attempting go get content-type %r and object PK %r exists raised %s" % \
                 (escape(ctype), escape(object_pk), e.__class__.__name__))
+
+    next = data.get('next')
+    if not next and hasattr(target, "get_absolute_url"):
+        next = target.get_absolute_url()
 
     # Back to the actual comment
     form = BlockCommentForm(target, data=data)
