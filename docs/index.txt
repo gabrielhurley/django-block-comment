@@ -32,9 +32,17 @@ Important notes:
   #. Run ``manage.py syncdb`` (or ``manage.py migrate`` if you use South).
   #. Create a model that uses ``block_comments.fields.BlockCommentField``.
   #. Include ``block_comment.css`` and ``block_comment.js`` in your template.
-  #. In your template add ``{% load comments %}``, and use the provided
-     ``{% comment_form_target %}`` template tag to specify your comment
-     form's ``action`` attribute.
+  #. Construct a standard comment form in your template like the following:
+
+    .. code-block:: html
+
+        {% load comments %}
+        {% get_comment_form for [object] as form %}
+        <form action="{% comment_form_target %}" method="post">{% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Submit" />
+        </form>
+
   #. Initialize the HTML element you wish to make block-commentable using the
      included jQuery plugin like so:
 
