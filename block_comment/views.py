@@ -9,8 +9,8 @@ from django.utils.html import escape
 from django.utils import simplejson as json
 from django.views.decorators.http import require_POST
 
-from block_comment.forms import BlockCommentForm
-from block_comment.models import BlockComment
+from .forms import BlockCommentForm
+from .models import BlockComment
 
 @require_POST
 def post_block_comment(request, using=None):
@@ -22,10 +22,6 @@ def post_block_comment(request, using=None):
             data["name"] = request.user.get_full_name() or request.user.username
         if not data.get('email', ''):
             data["email"] = request.user.email
-
-    next = data.get('next')
-    if not next and hasattr(target, "get_absolute_url"):
-        next = target.get_absolute_url()
 
     # ContentType validation
     ctype = data.get("content_type")
@@ -51,10 +47,16 @@ def post_block_comment(request, using=None):
             "Attempting go get content-type %r and object PK %r exists raised %s" % \
                 (escape(ctype), escape(object_pk), e.__class__.__name__))
 
+    next = data.get('next')
+    if not next and hasattr(target, "get_absolute_url"):
+        next = target.get_absolute_url()
+
     # Back to the actual comment
     form = BlockCommentForm(target, data=data)
     if form.is_valid():
         comment = form.get_comment_object()
+        if request.user.is_authenticated():
+            comment.user = request.user
         comment.save()
         d = {"comment": comment}
         if request.is_ajax():
