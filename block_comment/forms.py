@@ -1,6 +1,7 @@
 from django import forms
-from django.utils.translation import ugettext as _
 from django.contrib.comments.forms import CommentForm
+from django.utils.html import strip_tags
+from django.utils.translation import ugettext as _
 
 from block_comment.models import BlockComment
 
@@ -20,7 +21,9 @@ class BlockCommentForm(CommentForm):
             field_name = getattr(target, '_block_comment_field_name', '')
             orig_text = getattr(target, field_name, '')
             if text not in orig_text:
-                raise forms.ValidationError("Regarding text not found in original text.")
+                text = strip_tags(text)
+                if text not in orig_text:
+                    raise forms.ValidationError("Could not find the selected text block in the full text.")
         return text
 
     def get_comment_model(self):
@@ -33,6 +36,9 @@ class BlockCommentForm(CommentForm):
             "regarding": self.cleaned_data["regarding"],
         })
         return data
+
+    class Meta:
+        exclude = ('index', 'regarding')
 
 
 class BlockCommentFieldForm(forms.CharField):

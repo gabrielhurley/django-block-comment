@@ -13,12 +13,12 @@ class BlockComment(Comment):
     ``BlockComment`` extends Django's comments framework to store information
     about the block of text the comment relates to.
     '''
-    
+
     # Position in the full text that the block the comment relates to begins at
-    index = models.PositiveIntegerField(null=True, blank=True, editable=False)
+    index = models.PositiveIntegerField(null=True, blank=True)
 
     # The text of the block, used for determining diffs/orphans
-    regarding = models.TextField(blank=True, editable=False)
+    regarding = models.TextField(blank=True)
 
     def get_match_index(self, haystack):
             ''' Returns the index of the closest match to needle within

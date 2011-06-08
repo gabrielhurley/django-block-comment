@@ -3,19 +3,38 @@
         init: function (options) {
             var blocks, save_block_comment, widget, get_block_html,
                 get_index_for_block, update_bubble,
-            $this = this,
-            orig_html = $this.html(),
-            orig_dom = $(orig_html).filter("*"),
-            data = $this.data('block_comment'),
-            settings = {
-                commentOnContainer: ".block-comment-container",
-                blockCommentClass: ".block-comment",
-                commentClass: ".comment",
-                commentContainer: ".comments",
-                commentForm: "#standard-comment-form",
-                clickWhileOpen: "close"
-            };
-            
+                successHandler, errorHandler,
+                $this = this,
+                orig_html = $this.html(),
+                orig_dom = $(orig_html).filter("*"),
+                data = $this.data('block_comment'),
+                settings = {
+                    commentOnContainer: ".block-comment-container",
+                    blockCommentClass: ".block-comment",
+                    commentClass: ".comment",
+                    commentContainer: ".comments",
+                    commentForm: "#standard-comment-form",
+                    clickWhileOpen: "close",
+                    error: function (jqXHR, textStatus, errorThrown, data) {
+                        var current_widget = $("#comment-widget"),
+                            label;
+                        if (!data) {
+                            data = {'errors': {'comment': errorThrown}};
+                        }
+                        for (key in data.errors) {
+                            if (data.errors.hasOwnProperty(key)) {
+                                label = current_widget.find("label[for='id_" + key + "']");
+                                if (!label.length) {
+                                    label = current_widget.find('label:first');
+                                }
+                                label.addClass("error").append("<span class='error'>&nbsp;(" + data.errors[key] + ")</span>");
+                            }
+                            current_widget.find("textarea").focus();
+                        }
+                    },
+                    success: function (data, textStatus, jqXHR) {}
+                };
+
             update_bubble = function (block, container) {
                 var bubble = block.find(".bubble");
                 if (bubble.length) {
@@ -26,35 +45,28 @@
                         el.dequeue();
                     });
                 } else {
-                    $('<span class="bubble">' + 
-                        container.find(settings.commentClass).length + 
+                    $('<span class="bubble">' +
+                        container.find(settings.commentClass).length +
                         '</span>').hide().prependTo(block).fadeIn(250);
                 }
             };
-            
+
             get_block_html = function (block_index) {
                 return orig_dom.eq(block_index).clone().wrap("<div></div>").parent().html();
             }
-            
+
             get_index_for_block = function (regarding) {
                 return orig_html.indexOf(regarding);
             };
-            
-            settings.success = function (data, textStatus, jqXHR) {
+
+            successHandler = function (data, textStatus, jqXHR) {
                 var current_widget = $("#comment-widget"),
                     block, comment, comment_container, last_comment;
                 current_widget.find("button, textarea").attr("disabled", "");
                 if (data.status) {
                     switch (data.status) {
                     case 500:
-                        for (key in data.errors) {
-                            if (data.errors.hasOwnProperty(key)) {
-                                current_widget.find("label[for='id_" + key + "']")
-                                    .addClass("error")
-                                    .append("<span class='error'>&nbsp;(" + data.errors[key] + ")</span>");
-                            }
-                            current_widget.find("textarea").focus();
-                        }
+                        settings.error(jqXHR, textStatus, '', data);
                         break;
                     default:
                         break;
@@ -73,16 +85,18 @@
                     update_bubble(block, comment_container);
                     comment.slideDown();
                     comment_container.find("textarea").val("");
+                    settings.success(data, textStatus, jqXHR)
                 }
             };
-            
-            settings.error = function (jqXHR, textStatus, errorThrown) {
-                alert("There was an error while processing your submission.");
+
+            errorHandler = function (jqXHR, textStatus, errorThrown) {
+                settings.error(jqXHR, textStatus, errorThrown);
             };
-            
-            if (options) { 
+
+            if (options) {
                 $.extend(settings, options);
             }
+
 
             save_block_comment = function (evt) {
                 // placeholder for AJAX save
@@ -100,8 +114,8 @@
                     type: "POST",
                     url: settings.url,
                     data: form.serialize() + "&" + extra_params,
-                    success: settings.success,
-                    error: settings.error
+                    success: successHandler,
+                    error: errorHandler
                 });
                 form.find("button, textarea").attr("disabled", "disabled");
                 return false;

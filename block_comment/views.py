@@ -60,7 +60,13 @@ def post_block_comment(request, using=None):
         comment.save()
         d = {"comment": comment}
         if request.is_ajax():
-            return render_to_response('block_comment/comment.html', d, RequestContext(request))
+            template_list = [
+                "block_comment/comment.html",
+                "comments/%s/%s/comment.html" % (model._meta.app_label, model._meta.module_name),
+                "comments/%s/comment.html" % model._meta.app_label,
+                "comments/comment.html",
+            ]
+            return render_to_response(template_list, d, RequestContext(request))
         else:
             if not next:
                 raise ValueError("You must either pass a 'next' parameter in via POST or define a 'get_absolute_url' method on your model")
